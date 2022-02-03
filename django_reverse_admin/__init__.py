@@ -309,13 +309,13 @@ class ReverseModelAdmin(ModelAdmin):
         else:
             readonly_fields = self.get_readonly_fields(request, obj)
 
-        adminForm = helpers.AdminForm(form,
-                                      list(self.get_fieldsets(request)),
+        admin_form = helpers.AdminForm(form,
+                                      list(self.get_fieldsets(request, obj)),
                                       self.prepopulated_fields,
                                       readonly_fields=readonly_fields,
                                       model_admin=self
                                       )
-        media = self.media + adminForm.media
+        media = self.media + admin_form.media
 
         inline_admin_formsets = self.get_inline_formsets(request, formsets, self.get_inline_instances(request), obj)
         for inline_formset in inline_admin_formsets:
@@ -325,15 +325,13 @@ class ReverseModelAdmin(ModelAdmin):
         context = self.admin_site.each_context(request)
         reverse_admin_context = {
             'title': _(('Change %s', 'Add %s')[add]) % force_str(opts.verbose_name),
-            'adminform': adminForm,
-            # 'is_popup': '_popup' in request.REQUEST,
+            'adminform': admin_form,
             'is_popup': False,
             'object_id': object_id,
             'original': obj,
             'media': mark_safe(media),
             'inline_admin_formsets': inline_admin_formsets,
             'errors': helpers.AdminErrorList(form, formsets),
-            # 'root_path': self.admin_site.root_path,
             'app_label': opts.app_label,
         }
         context.update(reverse_admin_context)
